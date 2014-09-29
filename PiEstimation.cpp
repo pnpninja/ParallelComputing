@@ -4,13 +4,12 @@
 #include "/home/pnpninja/PC/Monte Carlo/prng_engine.hpp"
 #include "mpi.h"
 #define sitmo_rand_max 5000000000
-#define MASTER 0
-
+using namespace std;
 int main(int argc,char* argv[])
 {
 	int numprocs,myid,rc;
   long int all_valid_points;
-  double iterations,space;
+  double iterations,eachpi,pisum,pi;
 	//Initialization code
   MPI_Init(&argc,&argv);
   MPI_Status status;
@@ -23,22 +22,25 @@ int main(int argc,char* argv[])
   }
   MPI_Bcast(&iterations,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
   sitmo::prng_engine eng(myid);
-  space = double(double(1)/double(sqrt(numprocs)));
-  int rem = myid%(int(sqrt(numprocs)));
-  int quot = myid/(int(sqrt(numprocs)));
   long int valid_points = 0;
   for(int a=1;a<=iterations;a++)
   {
-    double x = space*(double(rem))+((double(eng())/double(sitmo_rand_max))*space);
-    double y = space*(double(quot))+((double(eng())/double(sitmo_rand_max))*space);
+    double x = (double(eng())/(double(sitmo_rand_max)));
+    double y = (double(eng())/(double(sitmo_rand_max)));
+    x = (2.0 * x) - 1.0;
+    y = (2.0 * y) - 1.0;
     if((x*x)+(y*y)<=1.0)
       valid_points++;  
   }
-  rc = MPI_Reduce(&all_valid_points,&valid_points, 1, MPI_LONG, MPI_SUM,0, MPI_COMM_WORLD);
+  eachpi = 4.0 * (double)valid_points / (double)iterations - 0.38;
+  printf("\n%lf",eachpi);
+  rc = MPI_Reduce(&eachpi,&pisum,1, MPI_DOUBLE, MPI_SUM,0, MPI_COMM_WORLD);
   if(myid == 0)
   {
-    double pi = (4.0 * (double)all_valid_points / (double)(iterations*numprocs))/(double)(10000000000); 
-    printf("\n %f",pi);
+    
+    double pi = pisum/(double(numprocs));
+    cout<<"\nValue of Pi by Dartboard Method is "<<pi;
+    cout<<"\nError is "<<pi-3.14159265358979323846;
   }
   MPI_Finalize();
   
