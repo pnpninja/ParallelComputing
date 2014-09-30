@@ -8,11 +8,11 @@ using namespace std;
 
 int main(int argc,char* argv[])
 {
-	//Initialization of variables
+  //Initialization of variables
   int numprocs,myid,rc;
   long int all_valid_points;
-  double iterations,eachintegration=0,integrationsum,pi,start,total_time,actualsum,deg1,deg0,llimit,rlimit;
-	//Initialization on MPI Variables
+  double iterations,eachintegration,integrationsum,pi,start,total_time,actualsum,deg1,deg0,llimit,rlimit,eachllimit,eachrlimit;
+  //Initialization on MPI Variables
   MPI_Init(&argc,&argv);
   MPI_Status status;
   MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
@@ -40,19 +40,22 @@ int main(int argc,char* argv[])
   MPI_Bcast(&iterations,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
   //Parallel Random Generator with seed as Process ID
   sitmo::prng_engine eng(MPI_Wtime());
+  eachintegration=0;
+  eachllimit = llimit+(((rlimit-llimit)/numprocs)*myid);
+  eachrlimit = llimit+(((rlimit-llimit)/numprocs)*(myid+1));
   for(int a=1;a<=iterations/numprocs;a++)
   {
-  	double point = llimit + ((double(eng())/(double(sitmo_rand_max)))*(rlimit-llimit));
-  	eachintegration+=(deg1*point)+deg0;
+    double point = eachllimit + ((double(eng())/(double(sitmo_rand_max)))*(eachrlimit-eachllimit));
+    eachintegration+=(deg1*point)+deg0;
   }
   rc = MPI_Reduce(&eachintegration,&integrationsum,1, MPI_DOUBLE, MPI_SUM,0, MPI_COMM_WORLD);
   if(myid == 0)
   {
     
     total_time = MPI_Wtime() - start;
-    cout<<"\nThe integration by Monte Carlo method is : "<<(integrationsum/iterations);
+    cout<<"\nThe integration by Monte Carlo method is : "<<((integrationsum/iterations)*(rlimit-llimit));
     actualsum = ((deg1*((pow(rlimit,2))-(pow(llimit,2))))/(double(2)))+(deg0*(rlimit-llimit));
-    cout<<"\nThe error is : "<<(integrationsum/iterations)-actualsum;
+    cout<<"\nThe error is : "<<((integrationsum/iterations)*(rlimit-llimit))-actualsum;
     cout<<"\nThe time taken is : "<<total_time;
   }
   MPI_Finalize();
