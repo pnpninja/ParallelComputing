@@ -27,7 +27,7 @@ int main(int argc,char* argv[])
   //Broadcast it to all other processes
   MPI_Bcast(&iterations,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
   //Parallel Random Generator with seed as MPI_Wtime()
-  sitmo::prng_engine eng(MPI_Wtime());
+  sitmo::prng_engine eng(myid);
   long int valid_points = 0;
   //Calculate how many points are inside
   for(int a=1;a<=iterations;a++)

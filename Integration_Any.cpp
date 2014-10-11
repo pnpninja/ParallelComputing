@@ -10,7 +10,7 @@ int main(int argc,char* argv[])
 {
 	//Initialization of variables
   int numprocs,myid,rc;
-  double iterations,eachintegration,integrationsum,pi,start,total_time,actualsum,llimit,rlimit,coefficients[26],highest_coefficient;
+  double iterations,eachintegration,integrationsum,pi,start,total_time,actualsum,llimit,rlimit,eachllimit,eachrlimit,coefficients[26],highest_coefficient;
 	//Initialization on MPI Variables
   MPI_Init(&argc,&argv);
   MPI_Status status;
@@ -41,13 +41,13 @@ int main(int argc,char* argv[])
   MPI_Bcast(&rlimit,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
   MPI_Bcast(&iterations,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
   //Parallel Random Generator with seed as Process ID
-  sitmo::prng_engine eng(myid);
+  sitmo::prng_engine eng(MPI_Wtime());
   eachintegration=0;
-  //eachllimit = llimit+(((rlimit-llimit)/numprocs)*myid);
-  //eachrlimit = llimit+(((rlimit-llimit)/numprocs)*(myid+1));
+  eachllimit = llimit+(((rlimit-llimit)/numprocs)*myid);
+  eachrlimit = llimit+(((rlimit-llimit)/numprocs)*(myid+1));
   for(int a=1;a<=iterations/numprocs;a++)
   {
-  	double point = llimit + ((double(eng())/(double(sitmo_rand_max)))*(rlimit-llimit));
+  	double point = eachllimit + ((double(eng())/(double(sitmo_rand_max)))*(eachrlimit-eachllimit));
   	for(int b=0;b<=highest_coefficient;b++)
     {
       eachintegration+=(coefficients[b]*(pow(point,b)));
