@@ -9,4 +9,13 @@ Parallel Computing Project for 5th Semester by
  * S Gopinath
  * Shashi Roshan
 
-Status - Dartboard Method Method for Calculation of Pi has been completed
+Topics chosen are
+
+ * Mathematics
+    * Estimation of Pi by
+      * Dartboard Method
+      * Quadrant Integration Method
+    * Integration on High Power Functions
+    
+ * Finance
+    * Simulation of Brownian Movement of a Stock Price 
