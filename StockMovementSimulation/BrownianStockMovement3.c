@@ -30,7 +30,7 @@ int main()
 #pragma omp parallel for default(none) private(i) shared(drift_mean,volatility_day,stockprice,stockprice_initial,len,prefixsum)
 	for(i=0;i<len;i++)
 	{
-		stockprice[i] = stockprice_initial*exp((drift_mean*(i+1))+(volatility_day*prefixsum[i]));
+		stockprice[i] = stockprice_initial*pow(2.71828,((drift_mean*(i+1))+(volatility_day*prefixsum[i])));
 	}
 
 	for(i=0;i<len;i++)
