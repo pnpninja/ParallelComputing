@@ -30,7 +30,7 @@ int main(int argc,char* argv[])
   sitmo::prng_engine eng(myid);
   long int valid_points = 0;
   //Calculate how many points are inside
-  for(int a=1;a<=iterations;a++)
+  for(int a=1;a<=iterations/numprocs;a++)
   {
     double x = (double(eng())/(double(sitmo_rand_max)));
     double y = (double(eng())/(double(sitmo_rand_max)));
@@ -40,7 +40,7 @@ int main(int argc,char* argv[])
       valid_points++;  
   }
   //Calculate each Pi generated in each process and print it
-  eachpi = 4.0 * (double)valid_points / (double)iterations;
+  eachpi = 4.0 * (double)valid_points / (double)(iterations/numprocs);
   printf("\nThread %d : %lf",myid,eachpi);
   rc = MPI_Reduce(&eachpi,&pisum,1, MPI_DOUBLE, MPI_SUM,0, MPI_COMM_WORLD);
   if(myid == 0)

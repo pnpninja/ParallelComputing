@@ -8,7 +8,7 @@
 
 int main()
 {
-	long double drift_year,volatility_year,volatility_day,drift_day,drift_mean,stockprice_initial,stockprice[100000],prefixsum[100000];
+	long double drift_year,volatility_year,volatility_day,drift_day,drift_mean,stockprice_initial,temp,temp2,stockprice[100000],prefixsum[100000];
 	int i,len=0;
 	printf("Enter the yearly drift in percentage : ");
 	scanf("%Lg",&drift_year);
@@ -27,10 +27,11 @@ int main()
   drift_day = drift_year/(100*252);
   volatility_day = volatility_year/(100*sqrt(252));
   drift_mean = drift_day - (0.5*pow(volatility_day,2));
+  printf(" Drift mean is : %Lg\n",drift_mean);
 #pragma omp parallel for default(none) private(i) shared(drift_mean,volatility_day,stockprice,stockprice_initial,len,prefixsum)
 	for(i=0;i<len;i++)
-	{
-		stockprice[i] = stockprice_initial*pow(2.71828,((drift_mean*(i+1))+(volatility_day*prefixsum[i])));
+	{		
+		stockprice[i] = (long double)stockprice_initial*pow(2.71828,(drift_mean*(i+1))+(volatility_day*prefixsum[i]));		
 	}
 
 	for(i=0;i<len;i++)
