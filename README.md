@@ -16,6 +16,7 @@ Topics chosen are
       * Dartboard Method
       * Quadrant Integration Method
     * Integration on High Power Functions
+      * Includes support for Reduction Formula in Trigonometry
     
  * Finance
     * Simulation of Brownian Movement of a Stock Price 
